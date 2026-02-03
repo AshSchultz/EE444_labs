@@ -10,9 +10,9 @@ void main(void)
   // Setting up DCO to 25mhz
   UCSCTL1 = DCORSEL_6;
   UCSCTL2 = 762;
-  UCSCTL4 = SELM__DCOCLK | SELS__DCOCLK;
-  P11SEL = BIT1 | BIT0; //setting output of main clock at spec pin
-  P11DIR = BIT1 | BIT0;
+  UCSCTL4 = SELM__DCOCLK | SELS__DCOCLK | SELA__REFOCLK;
+  P11SEL |= BIT1 | BIT0 | BIT2; //setting output of main clock at spec pin
+  P11DIR |= BIT1 | BIT0 | BIT2;
   // Timer setup
   P1DIR |= BIT0;
   TA1CCTL0 = CCIE | CM_1 | CAP;
@@ -67,7 +67,7 @@ void button_ISR(void) __interrupt[PORT2_VECTOR] { //interrupt service routine ha
     t0++;
   } else {
     t2 = TA1R;
-    delta_t = abs(t2 - t1);
+    delta_t = t2 - t1;
     P10OUT ^= BIT0; //toggle
     P1OUT ^= BIT0;
     t1 = 0;
