@@ -1,7 +1,7 @@
 <!DOCTYPE CrossStudio_Session_File>
 <session>
  <Bookmarks/>
- <Breakpoints groups="Breakpoints" active_group="Breakpoints"/>
+ <Breakpoints groups="" active_group="Breakpoints"/>
  <EEMRegistersWindow>
   <EEMRegisters generalClockControl="2e" moduleClockControl="40f"/>
  </EEMRegistersWindow>
@@ -18,32 +18,40 @@
  </FrameBufferWindow>
  <Memory1>
   <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_1" radix="16" sizeText="" addressText=""/>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_2" radix="16" sizeText="" addressText=""/>
  </Memory1>
  <Memory2>
   <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_1" radix="16" sizeText="" addressText=""/>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_2" radix="16" sizeText="" addressText=""/>
  </Memory2>
  <Memory3>
   <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_1" radix="16" sizeText="" addressText=""/>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_2" radix="16" sizeText="" addressText=""/>
  </Memory3>
  <Memory4>
   <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_1" radix="16" sizeText="" addressText=""/>
+  <MemoryWindow addressSpace="" dataSize="1" autoEvaluate="0" viewMode="0" addressOrder="0" columnsText="" refreshPeriod="0" name="Lab_2" radix="16" sizeText="" addressText=""/>
  </Memory4>
  <Project>
-  <ProjectSessionItem path="Lab_1"/>
-  <ProjectSessionItem path="Lab_1;Lab_1"/>
-  <ProjectSessionItem path="Lab_1;Lab_1;Source Files"/>
+  <ProjectSessionItem path="Lab_2"/>
+  <ProjectSessionItem path="Lab_2;Lab_2"/>
+  <ProjectSessionItem path="Lab_2;Lab_2;Source Files"/>
  </Project>
  <Register1>
   <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15;PMM/PMMCTL0;PMM/PMMCTL1;PMM/SVSMHCTL;PMM/SVSMLCTL;PMM/SVSMIO;PMM/PMMIFG;PMM/PMMRIE;PMM/PM5CTL0" binaryNodes="" asciiNodes="" openNodes="CPU Registers;PMM" name="Lab_1" decimalNodes="" octalNodes="" unsignedNodes=""/>
+  <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_2" decimalNodes="" octalNodes="" unsignedNodes=""/>
  </Register1>
  <Register2>
   <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_1" decimalNodes="" octalNodes="" unsignedNodes=""/>
+  <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_2" decimalNodes="" octalNodes="" unsignedNodes=""/>
  </Register2>
  <Register3>
   <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_1" decimalNodes="" octalNodes="" unsignedNodes=""/>
+  <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_2" decimalNodes="" octalNodes="" unsignedNodes=""/>
  </Register3>
  <Register4>
   <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_1" decimalNodes="" octalNodes="" unsignedNodes=""/>
+  <RegisterWindow visibleNodes="CPU Registers/PC;CPU Registers/SP;CPU Registers/SR;CPU Registers/R4;CPU Registers/R5;CPU Registers/R6;CPU Registers/R7;CPU Registers/R8;CPU Registers/R9;CPU Registers/R10;CPU Registers/R11;CPU Registers/R12;CPU Registers/R13;CPU Registers/R14;CPU Registers/R15" binaryNodes="" asciiNodes="" openNodes="CPU Registers" name="Lab_2" decimalNodes="" octalNodes="" unsignedNodes=""/>
  </Register4>
  <TargetWindow programLoadAddress="" programSize="" programMemoryInterface="" programFileName="" programFileType="" programAction=""/>
  <Threads>
@@ -65,10 +73,10 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="43" y="36" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.c" selected="1" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="70" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../Downloads/IncrementVcore.c" selected="0" top="45" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="11" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="main.c" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../Downloads/IncrementVcore.c" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" openedFrom="" useBinaryEdit="0" left="0" path="../../../../Downloads/DecrementVcore.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="2758" useTextEdit="1" openedFrom="D:/Users/akmooreschultz/Documents/EE444/EE444_labs/Lab_1/main.c" useBinaryEdit="0" left="0" path="../../../../AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f5438a.h" selected="0" top="2733" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="79" y="2751" useTextEdit="1" openedFrom="D:/Users/akmooreschultz/Documents/EE444/EE444_labs/Lab_2/main.c" useBinaryEdit="0" left="0" path="../../../../AppData/Local/Rowley Associates Limited/CrossWorks for MSP430/v3/packages/include/msp430f5438a.h" selected="0" top="2721" codecName="Default"/>
  </Files>
- <MSP430CrossStudioWindow activeProject="Lab_1" fileDialogDefaultFilter="*.c" autoConnectTarget="MSP-FET/MSP-FET430UIF/eZ-FET" buildConfiguration="MSP430 Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="D:/Users/akmooreschultz/Downloads" debugSearchPath="" autoConnectCapabilities="528255"/>
+ <MSP430CrossStudioWindow activeProject="Lab_2" fileDialogDefaultFilter="*.c" autoConnectTarget="MSP-FET/MSP-FET430UIF/eZ-FET" buildConfiguration="MSP430 Debug" sessionSettings="" debugSearchFileMap="" fileDialogInitialDirectory="D:/Users/akmooreschultz/Downloads" debugSearchPath="" autoConnectCapabilities="528255"/>
 </session>
