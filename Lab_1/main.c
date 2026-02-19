@@ -18,7 +18,7 @@ void main(void)
 
   TA1CTL = TASSEL_1 + MC_2 + TACLR;  //timerA clock source select (aclk), count up continuous (65k), timer clear, 
 
-  // Set output of Port 8 pin 5
+  // Set output of Port 10 pin 0
   P10DIR |= BIT0;
 
   // Setting up interrupts for port 2
@@ -33,7 +33,7 @@ void main(void)
   P1DIR |= BIT0;  // set to output
 
 
-//set core voltage to max
+  //set core voltage to max
   for(i = 0; i < NUM_PMM_COREV_LVLS; i++) {
     IncrementVcore();
   }
