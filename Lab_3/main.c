@@ -1,6 +1,8 @@
 
 #include <msp430.h>
 
+extern int IncrementVcore(void);
+
 typedef struct {
   int thirty_1_5;
   int eighty_1_5;
@@ -14,6 +16,7 @@ float temp_b;
 #define CIRCULAR_BUFFER_SIZE 255
 #define TEMP_DIFF 55
 #define TEMP_85 85
+#define  NUM_PMM_COREV_LVLS 4
 
 void main(void) {
   int i;
@@ -49,6 +52,11 @@ void main(void) {
   temp_m = ((float)tlv->eighty_1_5 - (float)tlv->thirty_1_5) / (float) TEMP_DIFF;
   temp_b = (float) tlv->eighty_1_5 - ((float) temp_m * (float) TEMP_85);
   //Enter LPM0, enable interrupts
+    //set core voltage to max
+  for(i = 0; i < NUM_PMM_COREV_LVLS; i++) {
+    IncrementVcore();
+  }
+
   _EINT();
   LPM0;
   //LPM3; 
