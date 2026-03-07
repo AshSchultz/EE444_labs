@@ -1,8 +1,8 @@
 #include <msp430.h>
 
-extern int IncrementVcore(void);
+extern void IncrementVcore(void);
 
-#define  NUM_PMM_COREV_LVLS 4
+#define  NUM_PMM_COREV_LVLS 2
 // Structure definition for the calibration data from flash
 typedef struct {
   int thirtyfive_1_5;
@@ -32,16 +32,15 @@ void main(void) {
     IncrementVcore();
   }
   // Setting up DCO to 17mhz
-  UCSCTL1 = DCORSEL_5;      // Setting clock to correct frequency range
-  UCSCTL2 = 518;  // Clock divisor
-  UCSCTL4 = SELM__DCOCLK | SELS__DCOCLK; //enabling master,  submaster
-  UCSCTL8 &= ~(SMCLKREQEN);
-  P11SEL |= BIT1 | BIT0 | BIT2;    //selecting special function for these pins (output main clock)
-  P11DIR |= BIT1 | BIT0 | BIT2;    // setting direction to output
+  ///clock config
+  UCSCTL4 = SELA_0 | SELS__DCOCLK | SELM__DCOCLK; //Selects DCOCLK for MCLK and SMCLK and 0 for ACLK (XT1)
+  UCSCTL2 = 518; //Divisor for DCO Creating 17 MHz for MCLK and SMCLK
+ 
+  UCSCTL1 = DCORSEL_5; //Select tap 5 for DCO 17MHz. 
   
   
   //setting up timer a
-  TA1CTL = TASSEL_1 + MC__UP + TACLR;  //timerA clock source select (aclk), count up(CCR0), timer clear
+  TA1CTL =  TASSEL__ACLK | MC__UP |TACLR; // selects ACLK for TimerA 1
   TA1CCTL0 = CCIE;
   TA1CCR0 = 32768;
 
@@ -49,20 +48,31 @@ void main(void) {
   REFCTL0 |= REFMSTR | REFVSEL_0 | REFOUT | REFON;
    
   //SET UP adc
+  ADC12CTL0 &= ~ADC12ENC; // Unlocks ADC12 config. 
+  ADC12CTL0 |= ADC12ON; // Turns on the ADC core.
+  ADC12CTL0 |= ADC12SHT0_10 | ADC12MSC; // Chooses 10 = 1010b which corresponds to 512 cycles giving us sample time of (a bit less) than 128us.
+      
+  ADC12CTL1 |= ADC12SSEL_3; // Selects 3 = 11b which selects SMCLK as source for ADC.
+  ADC12CTL1 |= ADC12SHP;    // Selects sampling timer
+  ADC12CTL1 |= ADC12DIV_3;  // Selects 3 = 011b corresponding to dividing the SMCLK by 4 ( around 4MHz) before being sent to ADC.  
+  ADC12CTL1 |= ADC12CONSEQ_1;  //sequence of channels mode for consectuive sampling.
 
-  ADC12CTL0 |= ADC12SHT0_12 | ADC12ON | ADC12MSC; // Sample and hold for 1024 clks, turn on ADC
-  ADC12MCTL0 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL1 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL2 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL3 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL4 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL5 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL6 |= ADC12INCH_10 | ADC12SREF1;
-  ADC12MCTL7 |= ADC12INCH_10 | ADC12SREF1 | ADC12EOS; // Choose input for ADC as temp sensor, set reference voltage
-  ADC12CTL1 |= ADC12SSEL_3 | ADC12DIV1 | ADC12SHP | ADC12CONSEQ_1; // use SMCLK, divide by 2, use sample and hold timer,sequence of channels (adc takes 100us,so 17Mhz/2=8.5 Mhz ... 1/8.5mhz = 118ns x 1024= 120 us > 100us)
+  ADC12CTL2 |= ADC12RES_2; // (around) 3.25 us  conversion time on 4MHz SMCLK.
+
+  ADC12IE |= ADC12IE7; //enables interrupts on ADC12MEM7
+ 
+  ADC12MCTL0 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode
+  ADC12MCTL1 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode
+  ADC12MCTL2 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode
+  ADC12MCTL3 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode
+  ADC12MCTL4 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode
+  ADC12MCTL5 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode
+  ADC12MCTL6 |= ADC12INCH_10 | ADC12SREF_1; // sets input channel to temperature diode  
+  ADC12MCTL7 |= ADC12INCH_10 | ADC12SREF_1 | ADC12EOS; // sets input channel to temperature diode and sets MEM7 as end of sequence 
   
-  ADC12IE |= ADC12IE7; // Enable interrupts for the temperature sensor adc pin
-  ADC12CTL0 |= ADC12ENC; // Enable conversion for ADC 8
+  ADC12CTL0 |= ADC12ENC;// Enables conversion
+ 
+
 
    // Setup conversion factors for ADC values
   temp_m = ((float) tlv->eightyfive_1_5 - (float)tlv->thirtyfive_1_5) / (float) TEMP_DIFF;
@@ -83,15 +93,14 @@ void main(void) {
 
   // Set up UART
   P5SEL |= BIT6 | BIT7;
-  UCA1CTL1 |= UCSWRST;
-  UCA1CTL0 |= UCPEN | UCPAR; //aprity enable, even parity, 7bit
-  UCA1CTL1 |= UCSSEL_2; // UART using SMCLK
-  UCA1BR0 = 110;
+  UCA1CTL1 |= UCSWRST; // puts state machine in reset 
+  UCA1CTL1 |= UCSSEL__SMCLK; // selects SMCLKC Source for BRCLK
+  UCA1CTL0 |= UCPEN | UCPAR | UC7BIT ; //
+  UCA1BR0 = 110; /// int(N/16). N= 17MHz/9600baudrate 
   UCA1BR1 = 0;
-  UCA1MCTL |= UCBRF_10 | UCBRS_6 | UCOS16;
+  UCA1MCTL |= UCOS16 | UCBRF_10 | UCBRS_6; //oversampling mode enabled   /// floor((N/16 - int(N/16)) *16) // UCBRS formula for low freq
   UCA1CTL1 &= ~UCSWRST;
-  UCA1IE |= UCTXIE; // enable transmit interrupts 
-  UCA1IFG &= ~UCTXIFG;
+
   //Enter LPM0, enable interrupts
   _EINT();
   LPM0;
@@ -111,6 +120,12 @@ void timerA_ISR(void) __interrupt[TIMER1_A0_VECTOR] {
 }
 
 unsigned int temp_sum = 0;
+//            0         1         2         3         4         5
+//            0123456789012345678901234567890123456789012345678901
+char msg[] = "000. The temperature is 00 0C. Running time is 0:00\r\n"; 
+unsigned int tx_count = 0;
+unsigned int hun_pl;
+unsigned int ten_pl;
 int i = 0;
 void adc12_ISR(void) __interrupt[ADC12_VECTOR] {
 
@@ -122,38 +137,33 @@ void adc12_ISR(void) __interrupt[ADC12_VECTOR] {
   temp_sum+= ADC12MEM5;
   temp_sum+= ADC12MEM6;
   temp_sum+= ADC12MEM7;
-  UCA1IFG = UCTXIFG;
+  temp_sum / 8;
+  temp_sum = (temp_sum - temp_b) / temp_m;
+  tx_count++;
+  hun_pl = tx_count / 100;
+  ten_pl = (tx_count - (hun_pl * 100))/10;
+  msg[0] += hun_pl;
+  msg[1] += ten_pl;
+  msg[2] += (tx_count - (ten_pl* 10))- (hun_pl*100);
+  
+  msg[24] += temp_sum /10;
+  msg[25] += temp_sum - ((temp_sum /10) * 10);
+  msg[27] = 167;
+  msg[47] += counter / 60;
+  msg[49] += (counter / 10) % 6;
+  msg[50] += (counter % 6);
+  UCA1IE |= UCTXIE; // enable transmit interrupts 
 }
-//            0         1         2         3         4         5
-//            0123456789012345678901234567890123456789012345678901
-char msg[] = "000. The temperature is 00 0C. Running time is 0:00\r\n"; 
-unsigned int tx_count = 0;
-unsigned int hun_pl;
-unsigned int ten_pl;
 
 void uart_tx_ISR(void) __interrupt[USCI_A1_VECTOR] { 
   switch(UCA1IV) {
     case 0: break;
     case 4: 
-      temp_sum / 8;
-      temp_sum = (temp_sum - temp_b) / temp_m;
-      tx_count++;
-      hun_pl = tx_count / 100;
-      ten_pl = (tx_count - (hun_pl * 100))/10;
-      msg[0] += hun_pl;
-      msg[1] += ten_pl;
-      msg[2] += (tx_count - (ten_pl* 10))- (hun_pl*100);
-      
-      msg[24] += temp_sum /10;
-      msg[25] += temp_sum - ((temp_sum /10) * 10);
-      msg[27] = 167;
-      msg[47] += counter / 60;
-      msg[49] += (counter / 10) % 6;
-      msg[50] += (counter % 6);
-      for(i = 0; i < sizeof(msg); i++) {
-        while(!(UCA1IFG & UCTXIFG));
         UCA1TXBUF = msg[i];
-      }
+        i++;
+        if( i > sizeof(msg)) {
+          UCA1IE &= ~UCTXIE;
+        }
     default: break;
     }      
 }
