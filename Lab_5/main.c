@@ -5,8 +5,8 @@ extern void IncrementVcore(void);
 #define  NUM_PMM_COREV_LVLS 2
 // Structure definition for the calibration data from flash
 typedef struct {
-  int thirtyfive_1_5;
-  int eightyfive_1_5;
+  unsigned int thirtyfive_1_5;
+  unsigned int eightyfive_1_5;
 } tlv_structure_t;
 
 unsigned int counter = 0;
@@ -38,6 +38,18 @@ void main(void) {
  
   UCSCTL1 = DCORSEL_5; //Select tap 5 for DCO 17MHz. 
   
+  // Set up UART
+  
+
+  P5SEL |= BIT6 | BIT7;
+
+  UCA1CTL1 |= UCSWRST; // puts state machine in reset 
+  UCA1CTL1 |= UCSSEL__SMCLK; // selects SMCLKC Source for BRCLK
+  UCA1CTL0 |= UCPEN | UCPAR; // 8 bit even parity
+  UCA1BR0 = 110; /// int(N/16). N= 17MHz/9600baudrate 
+  UCA1BR1 = 0;
+  UCA1MCTL |= UCOS16 | UCBRF_10 | UCBRS_6; //oversampling mode enabled   /// floor((N/16 - int(N/16)) *16) // UCBRS formula for low freq
+  UCA1CTL1 &= ~UCSWRST;
   
   //setting up timer a
   TA1CTL =  TASSEL__ACLK | MC__UP |TACLR; // selects ACLK for TimerA 1
@@ -75,8 +87,9 @@ void main(void) {
 
 
    // Setup conversion factors for ADC values
-  temp_m = ((float) tlv->eightyfive_1_5 - (float)tlv->thirtyfive_1_5) / (float) TEMP_DIFF;
-  temp_b = (float) tlv->eightyfive_1_5 - ((float) temp_m * (float) TEMP_85);
+  temp_m = ((float) tlv->eightyfive_1_5 - (float) tlv->thirtyfive_1_5) / TEMP_DIFF;
+  temp_b = (float) tlv->eightyfive_1_5 - ((float) temp_m * TEMP_85);
+ 
  
   // Setting up interrupts for port 2
   P2DIR &= ~BIT6; // setting button to input on click
@@ -87,19 +100,8 @@ void main(void) {
   
     //Led/pin setup
   P1DIR |= BIT0;
-  P10DIR |= BIT0;
+//  P10DIR |= BIT0; <<<<<<<<<<<<-----------
   P1OUT |= BIT0; // led on
-
-
-  // Set up UART
-  P5SEL |= BIT6 | BIT7;
-  UCA1CTL1 |= UCSWRST; // puts state machine in reset 
-  UCA1CTL1 |= UCSSEL__SMCLK; // selects SMCLKC Source for BRCLK
-  UCA1CTL0 |= UCPEN | UCPAR | UC7BIT ; //
-  UCA1BR0 = 110; /// int(N/16). N= 17MHz/9600baudrate 
-  UCA1BR1 = 0;
-  UCA1MCTL |= UCOS16 | UCBRF_10 | UCBRS_6; //oversampling mode enabled   /// floor((N/16 - int(N/16)) *16) // UCBRS formula for low freq
-  UCA1CTL1 &= ~UCSWRST;
 
   //Enter LPM0, enable interrupts
   _EINT();
@@ -113,9 +115,21 @@ ADC12CTL0 |= ADC12SC; // Start conversion
 P2IV = 0; //clear interrupt flag
 }
 
-
+unsigned int ten_counter = 0;
+unsigned int min_counter = 0;
 void timerA_ISR(void) __interrupt[TIMER1_A0_VECTOR] {
-  counter = counter + 1;
+  if (counter < 9) {
+    counter++;
+  } else {
+    ten_counter++;
+    counter = 0;
+  }
+
+  if (ten_counter >= 6) {
+    ten_counter = 0;
+    min_counter++;
+  }
+
   TA1CCTL0 &= ~(CCIFG); // Clear timer interrupt flag
 }
 
@@ -123,45 +137,51 @@ unsigned int temp_sum = 0;
 //            0         1         2         3         4         5
 //            0123456789012345678901234567890123456789012345678901
 char msg[] = "000. The temperature is 00 0C. Running time is 0:00\r\n"; 
-unsigned int tx_count = 0;
-unsigned int hun_pl;
-unsigned int ten_pl;
+unsigned int tx_count_one = 0;
+unsigned int tx_count_ten = 0;
+unsigned int tx_count_hun = 0;
+int temp_ave = 0;
+int temp = 0;
 int i = 0;
 void adc12_ISR(void) __interrupt[ADC12_VECTOR] {
 
-  temp_sum+= ADC12MEM0; // Sample the value from the temperature sensor, clears interrupt flag
-  temp_sum+= ADC12MEM1;
-  temp_sum+= ADC12MEM2;
-  temp_sum+= ADC12MEM3;
-  temp_sum+= ADC12MEM4;
-  temp_sum+= ADC12MEM5;
-  temp_sum+= ADC12MEM6;
-  temp_sum+= ADC12MEM7;
-  temp_sum / 8;
-  temp_sum = (temp_sum - temp_b) / temp_m;
-  tx_count++;
-  hun_pl = tx_count / 100;
-  ten_pl = (tx_count - (hun_pl * 100))/10;
-  msg[0] += hun_pl;
-  msg[1] += ten_pl;
-  msg[2] += (tx_count - (ten_pl* 10))- (hun_pl*100);
+  temp_sum += (ADC12MEM0 + ADC12MEM1 + ADC12MEM2 + ADC12MEM3 + ADC12MEM4 + ADC12MEM5 + ADC12MEM6 + ADC12MEM7); // Sample the value from the temperature sensor, clears interrupt flag
+
+  temp_ave = temp_sum / 8;
+  temp = ((temp_ave - temp_b) / temp_m);
   
-  msg[24] += temp_sum /10;
-  msg[25] += temp_sum - ((temp_sum /10) * 10);
-  msg[27] = 167;
-  msg[47] += counter / 60;
-  msg[49] += (counter / 10) % 6;
-  msg[50] += (counter % 6);
+  if (tx_count_one < 9) {
+    tx_count_one++;
+  } else {
+    tx_count_ten++;
+    tx_count_one = 0;
+  }
+  if (tx_count_ten >= 9) {
+    tx_count_ten = 0;
+    tx_count_hun++;
+  }
+  msg[0] = tx_count_hun + '0';
+  msg[1] = tx_count_ten + '0';
+  msg[2] = tx_count_one + '0';
+  
+  msg[24] = (temp / 10) + '0';
+  msg[25] = (temp % 10) + '0';
+  msg[27] = 176;
+  msg[47] = min_counter + '0';
+  msg[49] = ten_counter + '0';
+  msg[50] = counter + '0';
+  i = 0;
+  temp_sum = 0;
   UCA1IE |= UCTXIE; // enable transmit interrupts 
 }
 
 void uart_tx_ISR(void) __interrupt[USCI_A1_VECTOR] { 
-  switch(UCA1IV) {
+  switch (UCA1IV) {
     case 0: break;
     case 4: 
         UCA1TXBUF = msg[i];
         i++;
-        if( i > sizeof(msg)) {
+        if( i >= sizeof(msg)) {
           UCA1IE &= ~UCTXIE;
         }
     default: break;
