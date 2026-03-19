@@ -1,6 +1,6 @@
 #include <msp430.h>
 
-extern void IncrementVcore(void);
+extern int IncrementVcore(void);
 
 #define  NUM_PMM_COREV_LVLS 2
 // Structure definition for the calibration data from flash
@@ -100,7 +100,8 @@ void main(void) {
   
     //Led/pin setup
   P1DIR |= BIT0;
-//  P10DIR |= BIT0; <<<<<<<<<<<<-----------
+  P10OUT |= BIT0;
+  //P10DIR |= BIT0; // <<<<<<<<<<<<-----------
   P1OUT |= BIT0; // led on
 
   //Enter LPM0, enable interrupts
@@ -136,7 +137,7 @@ void timerA_ISR(void) __interrupt[TIMER1_A0_VECTOR] {
 unsigned int temp_sum = 0;
 //            0         1         2         3         4         5
 //            0123456789012345678901234567890123456789012345678901
-char msg[] = "000. The temperature is 00 0C. Running time is 0:00\r\n"; 
+char msg[] = "000. The temperature is 00 dC. Running time is 0:00\r\n"; 
 unsigned int tx_count_one = 0;
 unsigned int tx_count_ten = 0;
 unsigned int tx_count_hun = 0;
@@ -166,7 +167,6 @@ void adc12_ISR(void) __interrupt[ADC12_VECTOR] {
   
   msg[24] = (temp / 10) + '0';
   msg[25] = (temp % 10) + '0';
-  msg[27] = 176;
   msg[47] = min_counter + '0';
   msg[49] = ten_counter + '0';
   msg[50] = counter + '0';
